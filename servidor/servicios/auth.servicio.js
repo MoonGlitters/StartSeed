@@ -40,7 +40,11 @@ export const loginUsuario = async (email, password) => {
             usuario.lock_until = new Date(Date.now() + 1 * 60 * 1000);
         }
         await usuario.save();
-        throw new Error(`Credenciales inválidas. Intentos Restantes: ${4 - usuario.failed_attempts}`);}
+        const intentos = 3 - usuario.failed_attempts
+        if (intentos == 0){
+            throw new Error(`Credenciales inválidas. No te quedan intentos`);}
+        }
+        throw new Error(`Credenciales inválidas. Intentos Restantes: ${3 - usuario.failed_attempts}`);}
 
     //  Bloquear si esta inactivo
     if (usuario.estado === "inactiva") {
