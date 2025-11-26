@@ -20,7 +20,7 @@ import { usernameValidator, OTPValidator, emailValidator, contraseñaValidator }
 const authRouter = express.Router();
 
 authRouter.post('/registro',[...usernameValidator, ...emailValidator, ...contraseñaValidator],  registroController);
-authRouter.post('/login',[...emailValidator, ...contraseñaValidator],  loginController);
+authRouter.post('/login',[...emailValidator],  loginController);
 authRouter.post('/logout', logoutController);
 authRouter.post('/is-auth', userAuth, isAuthenticatedController);
 
