@@ -131,14 +131,22 @@ const schemaUsuario = (sequelize) => {
             allowNull: true
         },
         estado: {
-        type: DataTypes.ENUM('activa', 'inactiva', 'suspendida'),
-        defaultValue: 'activa',
-        allowNull: false
+            type: DataTypes.ENUM('activa', 'inactiva', 'suspendida'),
+            defaultValue: 'activa',
+            allowNull: false
         },
         suspension_expira_at: {
             type: DataTypes.DATE,
             allowNull: true,
             defaultValue: null,
+        },
+        failed_attempts: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+        },
+        lock_until: {
+            type: DataTypes.DATE,
+            allowNull: true,
         },
     }, {
         tableName: 'usuarios',

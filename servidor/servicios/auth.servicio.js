@@ -27,13 +27,26 @@ export const loginUsuario = async (email, password) => {
 
     if (!usuario) throw new Error("Credenciales inválidas");
 
+    const now = new Date();
+    if (usuario.lock_until && now < usuario.lock_until) {
+        const remaining = Math.ceil((user.lock_until - now) / 60000);
+        throw new Error(`Cuenta bloqueada. Intenta en ${remaining} minutos.`)
+    }
+
     const isMatch = await bcrypt.compare(password, usuario.password);
-    if (!isMatch) throw new Error("Credenciales inválidas");
+    if (!isMatch) {
+        usuario.failed_attempts += 1;
+        if (usuario.failed_attempts >= 3) {
+            usuario.lock_until = new Date(Date.now() + 1 * 60 * 1000);
+        }
+        await usuario.save();
+        throw new Error(`Credenciales inválidas ${Math.max(0, 3 - user.failed_attempts)}`);}
 
     //  Bloquear si esta inactivo
     if (usuario.estado === "inactiva") {
         throw new Error("Tu cuenta fue inactivada. Contacta con soporte.");
     }
+    
     // Bloquear si esta suspendido
     if (usuario.estado === "suspendida") {
         const fecha = new Date(usuario.suspension_expira_at).toLocaleString("es-CL", {
@@ -42,6 +55,10 @@ export const loginUsuario = async (email, password) => {
         });
         throw new Error(`Tu cuenta está suspendida hasta ${fecha}.`);
     }
+
+    usuario.failed_attempts = 0;
+    usuario.lock_until = null;
+    await usuario.save();
 
     //  Solo si está activa generas el token
     const token = generarToken(usuario);
