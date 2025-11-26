@@ -30,7 +30,7 @@ export const loginUsuario = async (email, password) => {
     const now = new Date();
     if (usuario.lock_until && now < usuario.lock_until) {
         const remaining = Math.ceil((usuario.lock_until - now) / 60000);
-        throw new Error(`Cuenta bloqueada. Intenta en ${remaining} minutos.`)
+        throw new Error(`Cuenta bloqueada. Intenta en ${remaining} minuto.`)
     }
 
     const isMatch = await bcrypt.compare(password, usuario.password);
@@ -40,7 +40,7 @@ export const loginUsuario = async (email, password) => {
             usuario.lock_until = new Date(Date.now() + 1 * 60 * 1000);
         }
         await usuario.save();
-        throw new Error(`Credenciales inválidas. Intentos Restantes: ${Math.max(0, 3 - usuario.failed_attempts)}`);}
+        throw new Error(`Credenciales inválidas. Intentos Restantes: ${Math.max(0, 4 - usuario.failed_attempts)}`);}
 
     //  Bloquear si esta inactivo
     if (usuario.estado === "inactiva") {
